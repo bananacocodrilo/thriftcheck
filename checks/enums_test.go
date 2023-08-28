@@ -44,3 +44,39 @@ func TestCheckEnumSize(t *testing.T) {
 	check := checks.CheckEnumSize(1, 2)
 	RunTests(t, check, tests)
 }
+
+func TestCheckEnumExplicit(t *testing.T) {
+	val := 0
+	negativeVal := -1
+
+	explicitEnum := []*ast.EnumItem{{Value: &val}}
+	explicitEnumWithNegative := []*ast.EnumItem{{Value: &negativeVal}, {Value: &val}}
+	implicitEnum := []*ast.EnumItem{{}, {}}
+	implicitEnumWithNegative := []*ast.EnumItem{{Value: &negativeVal}, {}}
+
+	tests := []Test{
+		{
+			node: &ast.Enum{Name: "enum", Items: explicitEnum},
+			want: []string{},
+		},
+		{
+			node: &ast.Enum{Name: "enum", Items: explicitEnumWithNegative},
+			want: []string{},
+		},
+		{
+			node: &ast.Enum{Name: "enum", Items: implicitEnum},
+			want: []string{
+				`t.thrift:0:1: warning: enumeration "enum" has implicit value for "". It is recommended to use explicit values in all enums (enum.explicit)`,
+			},
+		},
+		{
+			node: &ast.Enum{Name: "enum", Items: implicitEnumWithNegative},
+			want: []string{
+				`t.thrift:0:1: error: enumeration "enum" contains a negative value. In this case is mandatory to use explicit values in the rest of the entries. (enum.explicit)`,
+			},
+		},
+	}
+
+	check := checks.CheckEnumExplicit()
+	RunTests(t, check, tests)
+}

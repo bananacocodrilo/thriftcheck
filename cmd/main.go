@@ -42,6 +42,10 @@ type Config struct {
 				Warning int `fig:"warning"`
 				Error   int `fig:"error"`
 			}
+			Explicit struct {
+				Warning int `fig:"warning"`
+				Error   int `fig:"error"`
+			}
 		}
 
 		Include struct {
@@ -190,6 +194,7 @@ func main() {
 	allChecks := thriftcheck.Checks{
 		checks.CheckConstantRef(),
 		checks.CheckEnumSize(cfg.Checks.Enum.Size.Warning, cfg.Checks.Enum.Size.Error),
+		checks.CheckEnumExplicit(),
 		checks.CheckFieldIDMissing(),
 		checks.CheckFieldIDNegative(),
 		checks.CheckFieldIDZero(),

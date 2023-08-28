@@ -31,3 +31,29 @@ func CheckEnumSize(warningLimit, errorLimit int) *thriftcheck.Check {
 		}
 	})
 }
+
+// CheckEnumExplicit returns a thriftcheck.Check that warns or errors if an
+// enumeration's element uses implicit values.
+func CheckEnumExplicit() *thriftcheck.Check {
+	return thriftcheck.NewCheck("enum.explicit", func(c *thriftcheck.C, e *ast.Enum) {
+
+		negativeValueFound := false
+		for _, item := range e.Items {
+			if item.Value != nil && *item.Value < 0 {
+				negativeValueFound = true
+			}
+		}
+		for _, item := range e.Items {
+			if item.Value == nil {
+				if negativeValueFound {
+					c.Errorf(item, "enumeration %q contains a negative value. In this case is mandatory to use explicit values in the rest of the entries.", e.Name)
+				} else {
+					c.Warningf(item, "enumeration %q has implicit value for %q. It is recommended to use explicit values in all enums", e.Name, item.Name)
+				}
+
+				break
+			}
+		}
+
+	})
+}
