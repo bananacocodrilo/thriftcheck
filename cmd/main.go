@@ -206,6 +206,7 @@ func main() {
 		checks.CheckInteger64bit(),
 		checks.CheckMapKeyType(),
 		checks.CheckNamesReserved(cfg.Checks.Names.Reserved),
+		checks.CheckNamesCasing(),
 		checks.CheckNamespacePattern(cfg.Checks.Namespace.Patterns),
 		checks.CheckSetValueType(),
 	}
