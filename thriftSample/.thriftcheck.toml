@@ -7,8 +7,16 @@ disabled = []
 
 # Configuration values for specific checks:
 [checks.names]
-reserved = [
-    "template",
-]
- 
- 
+reserved = ["template"]
+  
+casing = [{
+   "*ast.Enum" = "pascalCase",
+   "*ast.Service" = "pascalCase",
+   "*ast.Struct" = "pascalCase",
+   "*ast.Typedef" = "pascalCase",
+   "*ast.Function" = "camelCase",
+   "*ast.Field" = "camelCase",
+   "*ast.Constant" = "screamingSnakeCase",
+   "*ast.EnumItem" = "screamingSnakeCase" 
+}]
+

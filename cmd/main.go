@@ -42,10 +42,6 @@ type Config struct {
 				Warning int `fig:"warning"`
 				Error   int `fig:"error"`
 			}
-			Explicit struct {
-				Warning int `fig:"warning"`
-				Error   int `fig:"error"`
-			}
 		}
 
 		Include struct {
@@ -53,7 +49,8 @@ type Config struct {
 		}
 
 		Names struct {
-			Reserved []string `fig:"reserved"`
+			Reserved []string          `fig:"reserved"`
+			Casing   map[string]string `fig:"casing"`
 		}
 
 		Namespace struct {
@@ -120,6 +117,9 @@ func loadConfig(cfg *Config) error {
 		}
 		return err
 	}
+	fmt.Println(cfg)
+	fmt.Println(cfg.Checks.Names.Casing)
+
 	return nil
 }
 
@@ -186,6 +186,7 @@ func main() {
 		fmt.Fprintln(os.Stderr, err)
 		os.Exit(1 << uint(thriftcheck.Error))
 	}
+
 	if len(includes) > 0 {
 		cfg.Includes = includes
 	}
@@ -206,7 +207,7 @@ func main() {
 		checks.CheckInteger64bit(),
 		checks.CheckMapKeyType(),
 		checks.CheckNamesReserved(cfg.Checks.Names.Reserved),
-		checks.CheckNamesCasing(),
+		checks.CheckNamesCasing(cfg.Checks.Names.Casing),
 		checks.CheckNamespacePattern(cfg.Checks.Namespace.Patterns),
 		checks.CheckSetValueType(),
 	}

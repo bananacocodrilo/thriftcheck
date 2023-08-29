@@ -32,11 +32,12 @@ func nodeName(node ast.Node) string {
 	return ""
 }
 
-var (
-	screamingSnakeCaseRE = regexp.MustCompile("^[A-Z]+(_[A-Z]+)*$")
-	camelCaseCheck       = regexp.MustCompile(`^[a-z]+([A-Z][a-z]+)*$`)
-	pascalCaseCheck      = regexp.MustCompile(`^([A-Z][a-z]+)+$`)
-)
+var casesRegExs = map[string]*regexp.Regexp{
+	`snakeCase`:          regexp.MustCompile("^[a-z]+(_[a-z]+)*$"),
+	`screamingSnakeCase`: regexp.MustCompile("^[A-Z]+(_[A-Z]+)*$"),
+	`camelCase`:          regexp.MustCompile(`^[a-z]+([A-Z][a-z]+)*$`),
+	`pascalCase`:         regexp.MustCompile(`^([A-Z][a-z]+)+$`),
+}
 
 // CheckNamesReserved checks if a node's name is in the list of reserved names.
 func CheckNamesReserved(names []string) *thriftcheck.Check {
@@ -54,38 +55,17 @@ func CheckNamesReserved(names []string) *thriftcheck.Check {
 }
 
 // CheckNamesCasing checks if each node complies with the casing rules.
-func CheckNamesCasing() *thriftcheck.Check {
+func CheckNamesCasing(caseCfg map[string]string) *thriftcheck.Check {
 	return thriftcheck.NewCheck("names.casing", func(c *thriftcheck.C, n ast.Node) {
 
-		switch n.(type) {
+		t := reflect.TypeOf(n).String()
 
-		// types that should be pascal case
-		case *ast.Enum, *ast.Service, *ast.Struct, *ast.Typedef:
-			if !pascalCaseCheck.MatchString(nodeName(n)) {
-				c.Errorf(n, "%q is not pascal case", nodeName(n))
+		caseName, cfgFound := caseCfg[t]
+		regex, caseFound := casesRegExs[caseName]
+		if cfgFound && caseFound {
+			if !regex.MatchString(nodeName(n)) {
+				c.Errorf(n, "%q is not %s", nodeName(n), caseName)
 			}
-
-		// types that should be camel case
-		case *ast.Function, *ast.Field:
-			if !camelCaseCheck.MatchString(nodeName(n)) {
-				c.Errorf(n, "%q is not camel case", nodeName(n))
-			}
-
-		//types that should be screaming snake case
-		case *ast.Constant, *ast.EnumItem:
-			if !screamingSnakeCaseRE.MatchString(nodeName(n)) {
-				c.Errorf(n, "%q is not screaming snake case", nodeName(n))
-			}
-
-		// Checked in CheckNamespacePattern ("namespace.patterns")
-		case *ast.Namespace:
-		// Root node, do nothing
-		case *ast.Program:
-		// Nothing to be done
-		case ast.BaseType, ast.MapType, ast.ListType, ast.SetType:
-		// Nothing to be done
-		default:
 		}
-
 	})
 }

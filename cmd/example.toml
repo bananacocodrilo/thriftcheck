@@ -30,6 +30,10 @@ error = 1000
 reserved = [
     "template",
 ]
+casing = [{
+   "*ast.Enum" = "pascalCase",
+   "*ast.EnumItem" = "screamingSnakeCase" 
+}]
 
 [checks.namespace]
 [[checks.namespace.patterns]]
