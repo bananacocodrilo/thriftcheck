@@ -15,7 +15,6 @@
 package checks
 
 import (
-	"fmt"
 	"reflect"
 	"regexp"
 
@@ -34,7 +33,6 @@ func nodeName(node ast.Node) string {
 }
 
 var (
-	snakeCase            = regexp.MustCompile("^[a-z]+(_[a-z]+)*$")
 	screamingSnakeCaseRE = regexp.MustCompile("^[A-Z]+(_[A-Z]+)*$")
 	camelCaseCheck       = regexp.MustCompile(`^[a-z]+([A-Z][a-z]+)*$`)
 	pascalCaseCheck      = regexp.MustCompile(`^([A-Z][a-z]+)+$`)
@@ -59,7 +57,7 @@ func CheckNamesReserved(names []string) *thriftcheck.Check {
 func CheckNamesCasing() *thriftcheck.Check {
 	return thriftcheck.NewCheck("names.casing", func(c *thriftcheck.C, n ast.Node) {
 
-		switch t := n.(type) {
+		switch n.(type) {
 
 		// types that should be pascal case
 		case *ast.Enum, *ast.Service, *ast.Struct, *ast.Typedef:
@@ -83,31 +81,10 @@ func CheckNamesCasing() *thriftcheck.Check {
 		case *ast.Namespace:
 		// Root node, do nothing
 		case *ast.Program:
-		// wip, didn't figure out how to access the field "Name" of the node
-		case ast.BaseType:
-			// Do nothing
-			fmt.Println("Node doc: ", reflect.ValueOf(n))
-			// nodeName(n)
-			a, _ := (n).(ast.BaseType)
-
-			fmt.Println(a.String())
-			fmt.Println(a.Annotations)
-			// if v.Kind() == reflect.Ptr {
-			// 	if f := v.Elem().FieldByName("Name"); f.IsValid() {
-			// 		  f.Interface().(string)
-			// 	}
-			// } else {
-
-			// }
-
-		// Did I forget something?
+		// Nothing to be done
+		case ast.BaseType, ast.MapType, ast.ListType, ast.SetType:
+		// Nothing to be done
 		default:
-			// Print all the info about the missing node
-			fmt.Printf("Node: %v\n", n)
-			fmt.Printf("Type: %v\n", t)
-			fmt.Printf("Node type: %T\n", n)
-			// fmt.Printf("Node name: %v\n", nodeName(n))
-
 		}
 
 	})
