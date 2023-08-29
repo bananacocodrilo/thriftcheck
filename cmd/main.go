@@ -117,8 +117,6 @@ func loadConfig(cfg *Config) error {
 		}
 		return err
 	}
-	fmt.Println(cfg)
-	fmt.Println(cfg.Checks.Names.Casing)
 
 	return nil
 }
