@@ -1,7 +1,7 @@
 # Lists of checks to explicitly enable or disable. If a prefix is given (e.g.
 # "namespace"), all checks matching that prefix will be matched.
 [checks]
-enabled = ["enum", "field.id.zero", "names.casing"]
+enabled = ["enum.explicit", "field.id.zero", "names.casing", "map.key.type"]
 disabled = []
 
 
