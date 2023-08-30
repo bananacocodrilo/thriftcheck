@@ -15,3 +15,8 @@ require (
 	github.com/stretchr/testify v1.8.1 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
+
+
+
+
+replace github.com/pinterest/thriftcheck => github.com/bananacocodrilo/thriftcheck 
