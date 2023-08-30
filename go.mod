@@ -1,4 +1,4 @@
-module github.com/pinterest/thriftcheck
+module github.com/bananacocodrilo/thriftcheck
 
 go 1.18
 
@@ -16,7 +16,4 @@ require (
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
 
-
-
-
-replace github.com/pinterest/thriftcheck => github.com/bananacocodrilo/thriftcheck 
+replace github.com/pinterest/thriftcheck => github.com/bananacocodrilo/thriftcheck v0.0.1
