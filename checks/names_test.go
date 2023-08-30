@@ -48,3 +48,37 @@ func TestCheckNamesReserved(t *testing.T) {
 	check := checks.CheckNamesReserved([]string{"reserved"})
 	RunTests(t, check, tests)
 }
+func TestCheckNamesCasing(t *testing.T) {
+	tests := []Test{
+		{
+			node: &ast.Struct{Name: "struct"},
+			want: []string{},
+		},
+		{
+			node: &ast.Enum{Name: "PascalCaseEnum"},
+			want: []string{},
+		},
+		{
+			node: &ast.Enum{Name: "camelCaseEnum"},
+			want: []string{
+				`t.thrift:0:1: error: "camelCaseEnum" is not pascalCase (names.casing)`,
+			},
+		},
+		{
+			node: &ast.EnumItem{Name: "SCREAMIMG_SNAKE_CASE_ENUM_ITEM"},
+			want: []string{},
+		},
+		{
+			node: &ast.EnumItem{Name: "camelCaseEnumItem"},
+			want: []string{
+				`t.thrift:0:1: error: "camelCaseEnumItem" is not screamingSnakeCase (names.casing)`,
+			},
+		},
+	}
+
+	check := checks.CheckNamesCasing(map[string]string{
+		"*ast.Enum":     "pascalCase",
+		"*ast.EnumItem": "screamingSnakeCase",
+	})
+	RunTests(t, check, tests)
+}
